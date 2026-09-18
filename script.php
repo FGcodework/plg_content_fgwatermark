@@ -52,13 +52,7 @@ class PlgContentFgwatermarkInstallerScript
 		$default = 'images/fgwatermark_cache';
 
 		try {
-			if (class_exists('Joomla\\CMS\\Factory')) {
-				$db = \Joomla\CMS\Factory::getDbo();
-			} elseif (class_exists('JFactory')) {
-				$db = JFactory::getDbo();
-			} else {
-				return $default;
-			}
+			$db = \Joomla\CMS\Factory::getDbo();
 
 			$query = $db->getQuery(true)
 				->select($db->quoteName('params'))

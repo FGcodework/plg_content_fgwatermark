@@ -1,5 +1,37 @@
 # Changelog - plg_content_fgwatermark
 
+## 3.0.0 - Native Joomla 4/5/6 build; Joomla 3 support ended
+- **Breaking/architecture change:** dropped Joomla 3.10 support. The plugin
+  is now native-only for Joomla 4.4+, 5 and 6:
+  - Removed `fgwatermark.php` (old bootstrap) and `src/legacy.php` (the
+    classic `extends JPlugin` wrapper).
+  - Added `services/provider.php`: registers the plugin via Joomla's DI
+    container (`ServiceProviderInterface`, `PluginInterface`).
+  - Added `src/Extension/Fgwatermark.php`: the plugin class, now
+    `namespace FG\Plugin\Content\Fgwatermark\Extension`, extends
+    `Joomla\CMS\Plugin\CMSPlugin`, implements `Joomla\Event\SubscriberInterface`
+    directly (replaces `src/modern.php`).
+  - `src/engine.php` → `src/Engine.php`: namespaced
+    (`FG\Plugin\Content\Fgwatermark\Engine`), and all `class_exists()`
+    fallbacks to legacy `JUri`/`JFactory`/`JLog` removed - uses
+    `Joomla\CMS\Uri\Uri` and `Joomla\CMS\Log\Log` directly. Watermarking
+    logic itself (GD/Imagick rendering, caching, security fixes) is
+    unchanged from v2.1.4.
+  - Manifest gained `<namespace path="src">FG\Plugin\Content\Fgwatermark</namespace>`
+    and `<files><folder plugin="fgwatermark">services</folder>...` (PSR-4
+    autoloading, no more flat entry-point file).
+  - `script.php` (installer script) simplified: `\Joomla\CMS\Factory`
+    directly, no more `JFactory` fallback.
+- **Update channel split:** `updates.xml` now has two `<update>` entries -
+  one for 3.0.0+ (`<targetplatform version="[4-6]\..*"/>`) and a frozen one
+  for the last Joomla-3-compatible release, v2.1.4
+  (`<targetplatform version="3\..*"/>`) - so existing Joomla 3 sites keep
+  seeing v2.1.4 as their latest available version and are never offered the
+  incompatible native build. No further v2.x releases are planned; Joomla 3
+  sites should migrate to Joomla 4+ for continued updates.
+- No functional/behavioral change to the watermarking itself versus v2.1.4 -
+  this release is purely an architecture/compatibility-target change.
+
 ## 2.1.4
 - Updated copyright and GitHub URLs to match the account rename from
   `ferino75` to `FGcodework`: `Copyright (C) 2026 Fero` → `Copyright (C)

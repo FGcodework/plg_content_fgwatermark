@@ -6,16 +6,21 @@
  * @copyright   Copyright (C) 2026 FGcodework. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  *
- * Shared GD-based watermarking engine. Deliberately Joomla-version agnostic:
- * only touches JPATH_ROOT (a core constant defined identically since Joomla 1.5)
- * and plain PHP file functions, so the exact same class works whether it's
- * driven by the legacy JPlugin wrapper (Joomla 3) or the modern
- * SubscriberInterface wrapper (Joomla 4/5/6).
+ * Shared GD-based watermarking engine. Only touches JPATH_ROOT (a core
+ * constant, stable across all Joomla versions) and plain PHP file functions
+ * for everything except site URL/host resolution and logging, which go
+ * through native Joomla 4/5/6 classes directly (no legacy fallback - this
+ * plugin is native-only from v3.0.0 onward; see v2.x for Joomla 3 support).
  */
+
+namespace FG\Plugin\Content\Fgwatermark;
 
 defined('_JEXEC') or die;
 
-class WatermarkEngine
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
+
+class Engine
 {
 	/**
 	 * Bumped alongside the plugin version on every release. Included in the
@@ -23,7 +28,7 @@ class WatermarkEngine
 	 * output, even when no user-facing parameter actually changed (e.g. a bug
 	 * fix in the rendering code itself, like SVG support in 1.6.0).
 	 */
-	const VERSION = '2.1.4';
+	const VERSION = '3.0.0';
 
 	/** @var object  Joomla Registry (or JRegistry) instance - both expose ->get() identically */
 	protected $params;
@@ -248,22 +253,12 @@ class WatermarkEngine
 	}
 
 	/**
-	 * Root-relative site path (e.g. "" for root install, "/sub" for a subfolder
-	 * install). Tries the modern namespaced Uri class first (always present from
-	 * Joomla 4 onward without relying on any deprecated alias), falls back to the
-	 * classic JUri for Joomla 3.
+	 * Root-relative site path (e.g. "" for root install, "/sub" for a
+	 * subfolder install).
 	 */
 	protected function getRootPath()
 	{
-		if (class_exists('Joomla\\CMS\\Uri\\Uri')) {
-			return rtrim(\Joomla\CMS\Uri\Uri::root(true), '/');
-		}
-
-		if (class_exists('JUri')) {
-			return rtrim(JUri::root(true), '/');
-		}
-
-		return '';
+		return rtrim(Uri::root(true), '/');
 	}
 
 	/**
@@ -276,15 +271,7 @@ class WatermarkEngine
 	 */
 	protected function getSiteHost()
 	{
-		if (class_exists('Joomla\\CMS\\Uri\\Uri')) {
-			return \Joomla\CMS\Uri\Uri::getInstance()->getHost();
-		}
-
-		if (class_exists('JUri')) {
-			return JUri::getInstance()->getHost();
-		}
-
-		return isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+		return Uri::getInstance()->getHost();
 	}
 
 	/**
@@ -495,27 +482,17 @@ class WatermarkEngine
 	}
 
 	/**
-	 * Write a warning to the Joomla log (category "plg_content_fgwatermark") when
-	 * available, falling back to the PHP error log. Never throws - logging must
-	 * not be able to break page rendering.
+	 * Write a warning to the Joomla log (category "plg_content_fgwatermark").
+	 * Never throws - logging must not be able to break page rendering; falls
+	 * back to the PHP error log only if Joomla's own logger itself throws.
 	 */
 	protected function logWarning($message)
 	{
 		try {
-			if (class_exists('Joomla\\CMS\\Log\\Log')) {
-				\Joomla\CMS\Log\Log::add($message, \Joomla\CMS\Log\Log::WARNING, 'plg_content_fgwatermark');
-				return;
-			}
-
-			if (class_exists('JLog')) {
-				JLog::add($message, JLog::WARNING, 'plg_content_fgwatermark');
-				return;
-			}
+			Log::add($message, Log::WARNING, 'plg_content_fgwatermark');
 		} catch (\Exception $e) {
-			// fall through to error_log
+			error_log('[plg_content_fgwatermark] ' . $message);
 		}
-
-		error_log('[plg_content_fgwatermark] ' . $message);
 	}
 
 	/**

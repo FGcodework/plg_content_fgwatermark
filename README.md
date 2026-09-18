@@ -3,16 +3,20 @@
 # FG Watermark
 
 ![Latest release](https://img.shields.io/github/v/release/fgcodework/plg_content_fgwatermark?color=FF6B4A&label=release)
-![Joomla](https://img.shields.io/badge/Joomla-3.10%20--%206.x-005E93.svg?logo=joomla&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-5.6%2B-777BB4.svg?logo=php&logoColor=white)
+![Joomla](https://img.shields.io/badge/Joomla-4.4%2B%20%2F%205%20%2F%206-005E93.svg?logo=joomla&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4.svg?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPL--2.0-green.svg)
 ![Downloads](https://img.shields.io/github/downloads/fgcodework/plg_content_fgwatermark/total?cacheSeconds=3600)
 
 Automatically watermarks images inside Joomla article content — an image
 logo, a text overlay, or both — with cached output so nothing is re-rendered
-on every page load. Works unmodified from **Joomla 3.10 through Joomla 6**
-via a small dual-compatibility bootstrap (classic `JPlugin` on 3.x,
-`SubscriberInterface` on 4/5/6).
+on every page load. Native **Joomla 4.4+, 5 and 6** build (PSR-4, DI service
+provider, `SubscriberInterface`).
+
+> **Joomla 3.10?** Use the last v2.x release instead (still available in
+> [Releases](https://github.com/fgcodework/plg_content_fgwatermark/releases) -
+> no further Joomla 3 updates are planned; migrate to Joomla 4+ for ongoing
+> support).
 
 ## Features
 
@@ -35,8 +39,8 @@ via a small dual-compatibility bootstrap (classic `JPlugin` on 3.x,
 
 ## Requirements
 
-- Joomla 3.10, or Joomla 4/5/6
-- PHP with the **GD** extension (required)
+- Joomla 4.4+, or Joomla 5/6
+- PHP 7.4+ with the **GD** extension (required)
 - PHP with the **Imagick** extension + SVG/rsvg delegate (optional, only
   needed if you use an SVG logo)
 
