@@ -1,12 +1,12 @@
-﻿[![fgwatermark logo](assets/logo.png)](assets/logo.png)
+[![fgwatermark logo](assets/logo.png)](assets/logo.png)
 
 # FG Watermark
 
-![Latest release](https://img.shields.io/github/v/release/FGcodework/plg_content_fgwatermark?color=FF6B4A&label=release)
+![Latest release](https://img.shields.io/github/v/release/fgcodework/plg_content_fgwatermark?color=FF6B4A&label=release)
 ![Joomla](https://img.shields.io/badge/Joomla-3.10%20--%206.x-005E93.svg?logo=joomla&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-5.6%2B-777BB4.svg?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPL--2.0-green.svg)
-![Downloads](https://img.shields.io/github/downloads/FGcodework/plg_content_fgwatermark/total?cacheSeconds=3600)
+![Downloads](https://img.shields.io/github/downloads/fgcodework/plg_content_fgwatermark/total?cacheSeconds=3600)
 
 Automatically watermarks images inside Joomla article content — an image
 logo, a text overlay, or both — with cached output so nothing is re-rendered
@@ -43,7 +43,7 @@ via a small dual-compatibility bootstrap (classic `JPlugin` on 3.x,
 ## Installation
 
 Download the latest release ZIP from the
-[Releases](https://github.com/FGcodework/plg_content_fgwatermark/releases)
+[Releases](https://github.com/fgcodework/plg_content_fgwatermark/releases)
 page and install it via Joomla's Extension Manager (Upload & Install), then
 enable **Content - FG Watermark** in the Plugin Manager and configure it.
 

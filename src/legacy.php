@@ -1,7 +1,10 @@
 <?php
 /**
  * @package     Joomla.Plugin
- * @subpackage  Content.Watermark
+ * @subpackage  Content.Fgwatermark
+ *
+ * @copyright   Copyright (C) 2026 FGcodework. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  *
  * Classic JPlugin-style wrapper. Loaded ONLY when Joomla\Event\SubscriberInterface
  * doesn't exist yet - in practice that means Joomla 3.x. Kept deliberately thin:

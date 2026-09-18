@@ -1,5 +1,23 @@
 # Changelog - plg_content_fgwatermark
 
+## 2.1.4
+- Updated copyright and GitHub URLs to match the account rename from
+  `ferino75` to `FGcodework`: `Copyright (C) 2026 Fero` → `Copyright (C)
+  2026 FGcodework` in all PHP file headers and the manifest's `<copyright>`
+  tag; `github.com/ferino75/...` → `github.com/fgcodework/...` in the
+  manifest's `<authorUrl>` and `<updateservers>`, `updates.xml`
+  (`<infourl>`, `<downloadurl>`), and README.md badges/links. The manifest's
+  `<author>Fero</author>` tag (the person, not the org) is left as-is.
+
+## 2.1.3
+- Fix: JED submission checker flagged all five PHP files (fgwatermark.php,
+  script.php, src/engine.php, src/legacy.php, src/modern.php) for a missing
+  GPL license notice. A LICENSE file at the repo root isn't enough - JED's
+  checker scans each individual PHP file's own header. Added explicit
+  `@copyright` / `@license` doc-block lines to every file's header (also
+  corrected the stale `@subpackage Content.Watermark` to
+  `Content.Fgwatermark` while touching these headers).
+
 ## 2.1.2 - Security fix
 - Fixed a path traversal vulnerability: `inScope()` compared the configured
   scope folder against the raw, un-canonicalized path extracted from

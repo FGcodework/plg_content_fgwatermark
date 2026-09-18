@@ -1,7 +1,10 @@
 <?php
 /**
  * @package     Joomla.Plugin
- * @subpackage  Content.Watermark
+ * @subpackage  Content.Fgwatermark
+ *
+ * @copyright   Copyright (C) 2026 FGcodework. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  *
  * SubscriberInterface wrapper. Loaded whenever Joomla\Event\SubscriberInterface
  * exists - Joomla 4, 5 and 6. CMSPlugin's legacy on*-method auto-registration

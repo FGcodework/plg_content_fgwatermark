@@ -1,7 +1,10 @@
 <?php
 /**
  * @package     Joomla.Plugin
- * @subpackage  Content.Watermark
+ * @subpackage  Content.Fgwatermark
+ *
+ * @copyright   Copyright (C) 2026 FGcodework. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  *
  * Installer script. Joomla looks for a class named "<element>InstallerScript"
  * (class name matching is case-insensitive in PHP) - for this plugin that's

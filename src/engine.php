@@ -1,7 +1,10 @@
 <?php
 /**
  * @package     Joomla.Plugin
- * @subpackage  Content.Watermark
+ * @subpackage  Content.Fgwatermark
+ *
+ * @copyright   Copyright (C) 2026 FGcodework. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  *
  * Shared GD-based watermarking engine. Deliberately Joomla-version agnostic:
  * only touches JPATH_ROOT (a core constant defined identically since Joomla 1.5)
@@ -20,7 +23,7 @@ class WatermarkEngine
 	 * output, even when no user-facing parameter actually changed (e.g. a bug
 	 * fix in the rendering code itself, like SVG support in 1.6.0).
 	 */
-	const VERSION = '2.1.2';
+	const VERSION = '2.1.4';
 
 	/** @var object  Joomla Registry (or JRegistry) instance - both expose ->get() identically */
 	protected $params;

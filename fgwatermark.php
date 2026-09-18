@@ -1,7 +1,10 @@
 <?php
 /**
  * @package     Joomla.Plugin
- * @subpackage  Content.Watermark
+ * @subpackage  Content.Fgwatermark
+ *
+ * @copyright   Copyright (C) 2026 FGcodework. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  *
  * Entry point. Joomla's plugin loader always includes this exact file and then
  * looks for a class called PlgContentFgwatermark - regardless of Joomla version.
