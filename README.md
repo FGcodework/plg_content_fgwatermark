@@ -1,6 +1,8 @@
-[![fgwatermark logo](assets/logo.png)](assets/logo.png)
+<p align="center">
+  <img src="assets/logo.png" alt="plg_content_fgwatermark logo" width="128" height="128">
+</p>
 
-# FG Watermark plugin for Joomla
+<h1 align="center">FG Watermark plugin for Joomla</h1>
 
 ![Latest release](https://img.shields.io/github/v/release/FGcodework/plg_content_fgwatermark?color=FF6B4A&label=release)
 ![Joomla](https://img.shields.io/badge/Joomla-4.4%2B%20%2F%205%20%2F%206-blue.svg?logo=joomla&logoColor=white)
