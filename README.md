@@ -13,9 +13,8 @@ logo, a text overlay, or both — with cached output so nothing is re-rendered
 on every page load. Native **Joomla 4.4+, 5 and 6** build (PSR-4, DI service
 provider, `SubscriberInterface`).
 
-> **Joomla 3.10?** Use the last v2.x release instead (still available in
-> [Releases](https://github.com/fgcodework/plg_content_fgwatermark/releases) -
-> no further Joomla 3 updates are planned; migrate to Joomla 4+ for ongoing
+> **Joomla 3.10?** Use the last [v2.x release](releases/tag/v2.1.4) instead (still available in
+> Releases - no further Joomla 3 updates are planned; migrate to Joomla 4+ for ongoing
 > support).
 
 ## Features
