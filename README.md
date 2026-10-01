@@ -1,12 +1,18 @@
-[![fgwatermark logo](assets/logo.png)](assets/logo.png)
+<p align="center">
+  <img src="assets/logo.png" alt="plg_content_fgwatermark logo" width="128" height="128">
+</p>
 
-# FG Watermark plugin for Joomla
+<h1 align="center">FG Watermark plugin for Joomla</h1>
 
-![Latest release](https://img.shields.io/github/v/release/FGcodework/plg_content_fgwatermark?color=FF6B4A&label=release)
-![Joomla](https://img.shields.io/badge/Joomla-4.4%2B%20%2F%205%20%2F%206-blue.svg?logo=joomla&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg?logo=php&logoColor=white)
-![License](https://img.shields.io/badge/license-GPL--2.0-green.svg)
-![Downloads](https://img.shields.io/github/downloads/FGcodework/plg_content_fgwatermark/total?cacheSeconds=3600)
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/FGcodework/plg_content_fgwatermark?color=FF6B4A&label=release" alt="Latest release">
+  <img src="https://img.shields.io/badge/Joomla-4.4%2B%20%2F%205%20%2F%206-blue.svg?logo=joomla&logoColor=white" alt="Joomla">
+  <img src="https://img.shields.io/badge/PHP-7.4%2B-purple.svg?logo=php&logoColor=white" alt="PHP">
+  <a href="https://extensions.joomla.org/extension/access-a-security/site-security/email-remover/"><img src="https://img.shields.io/badge/Joomla!%20Extensions%20Directory%E2%84%A2-EmailRemover-blue" alt="JED"></a>
+  <img src="https://img.shields.io/badge/license-GPL--2.0-green.svg" alt="License">
+  <img src="https://img.shields.io/github/downloads/FGcodework/plg_content_fgwatermark/total?cacheSeconds=3600&color=brown" alt="Downloads">
+  <a href="https://ko-fi.com/FGcodework"><img src="https://img.shields.io/badge/support-Ko--fi-F16061.svg?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
+</p>
 
 Automatically watermarks images inside Joomla article content — an image
 logo, a text overlay, or both — with cached output so nothing is re-rendered
