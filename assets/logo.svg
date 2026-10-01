@@ -5,13 +5,10 @@
       <stop offset="100%" stop-color="#113758"/>
     </linearGradient>
     <clipPath id="squircle">
-      <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+      <rect x="0" y="0" width="512" height="512" rx="95" ry="95"/>
     </clipPath>
     <clipPath id="photoClip">
-      <rect x="146" y="176" width="220" height="160" rx="16" ry="16"/>
-    </clipPath>
-    <clipPath id="ribbonClip">
-      <rect x="146" y="176" width="220" height="160" rx="16" ry="16"/>
+      <rect x="138" y="168" width="236" height="172" rx="16" ry="16"/>
     </clipPath>
   </defs>
 
@@ -19,23 +16,21 @@
     <rect x="0" y="0" width="512" height="512" fill="url(#bg)"/>
 
     <!-- photo card -->
-    <g>
-      <rect x="146" y="176" width="220" height="160" rx="16" ry="16" fill="#F4F7FA"/>
+    <rect x="138" y="168" width="236" height="172" rx="16" ry="16" fill="#F4F7FA"/>
 
-      <!-- photo content: mountain + sun, clipped to card -->
-      <g clip-path="url(#photoClip)">
-        <circle cx="320" cy="206" r="18" fill="#FFC94A"/>
-        <polygon points="146,336 226,246 268,286 320,220 366,336" fill="#0E2C48"/>
-        <polygon points="146,336 200,266 236,300 366,336" fill="#164569"/>
-      </g>
+    <g clip-path="url(#photoClip)">
+      <circle cx="306" cy="196" r="19" fill="#FFC94A"/>
+      <polygon points="138,340 224,266 270,310 326,224 374,340" fill="#0E2C48"/>
+      <polygon points="138,340 196,264 234,298 374,340" fill="#164569"/>
+    </g>
 
-      <!-- diagonal watermark ribbon across the photo -->
-      <g clip-path="url(#ribbonClip)">
-        <rect x="120" y="244" width="280" height="46" transform="rotate(-18 256 256)" fill="#FF6B4A" fill-opacity="0.86"/>
-      </g>
+    <rect x="138" y="168" width="236" height="172" rx="16" ry="16" fill="none" stroke="#0B2338" stroke-width="4"/>
 
-      <!-- card border -->
-      <rect x="146" y="176" width="220" height="160" rx="16" ry="16" fill="none" stroke="#0B2338" stroke-width="4"/>
+    <!-- stamp badge, slightly rotated -->
+    <g transform="rotate(-12 356 330)">
+      <circle cx="356" cy="330" r="82" fill="#FF6B4A" stroke="#FFFFFF" stroke-width="6"/>
+      <text x="356" y="330" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold"
+            font-size="74" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     </g>
   </g>
 </svg>
