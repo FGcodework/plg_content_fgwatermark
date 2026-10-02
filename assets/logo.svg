@@ -7,30 +7,38 @@
     <clipPath id="squircle">
       <rect x="0" y="0" width="512" height="512" rx="95" ry="95"/>
     </clipPath>
-    <clipPath id="photoClip">
-      <rect x="138" y="168" width="236" height="172" rx="16" ry="16"/>
+    <clipPath id="scene">
+      <rect x="104" y="120" width="256" height="224" rx="20" ry="20"/>
     </clipPath>
   </defs>
 
   <g clip-path="url(#squircle)">
     <rect x="0" y="0" width="512" height="512" fill="url(#bg)"/>
 
-    <!-- photo card -->
-    <rect x="138" y="168" width="236" height="172" rx="16" ry="16" fill="#F4F7FA"/>
-
-    <g clip-path="url(#photoClip)">
-      <circle cx="306" cy="196" r="19" fill="#FFC94A"/>
-      <polygon points="138,340 224,266 270,310 326,224 374,340" fill="#0E2C48"/>
-      <polygon points="138,340 196,264 234,298 374,340" fill="#164569"/>
+    <!-- photo frame, slightly tilted -->
+    <g transform="rotate(-5 232 232)">
+      <rect x="82" y="98" width="300" height="268" rx="36" ry="36" fill="#F4F7FA"/>
+      <g clip-path="url(#scene)">
+        <rect x="104" y="120" width="256" height="224" fill="#C4DCF0"/>
+        <circle cx="306" cy="172" r="26" fill="#FFC94A"/>
+        <polygon points="96,292 168,206 214,236 150,318" fill="#2B6A9E"/>
+        <polygon points="104,310 226,176 372,268 372,330 104,330" fill="#164569"/>
+        <rect x="104" y="288" width="256" height="60" fill="#0E2C48"/>
+      </g>
     </g>
 
-    <rect x="138" y="168" width="236" height="172" rx="16" ry="16" fill="none" stroke="#0B2338" stroke-width="4"/>
+    <!-- water droplet -->
+    <path d="M352.00,196.00 C364.10,221.22 392.89,244.86 417.95,274.81 A86,86 0 1 1 286.05,274.81 C311.11,244.86 339.90,221.22 352.00,196.00 Z" fill="#FF6B4A" stroke="#F4F7FA" stroke-width="6" stroke-linejoin="round"/>
+    <ellipse cx="398" cy="278" rx="8" ry="22"
+             transform="rotate(-30 398 278)" fill="#FF9A82"/>
 
-    <!-- stamp badge, slightly rotated -->
-    <g transform="rotate(-12 356 330)">
-      <circle cx="356" cy="330" r="82" fill="#FF6B4A" stroke="#FFFFFF" stroke-width="6"/>
-      <text x="356" y="330" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold"
-            font-size="74" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
+    <!-- viewfinder brackets + W -->
+    <g fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M303.0,308.0 L303.0,289.0 L322.0,289.0"/>
+      <path d="M382.0,289.0 L401.0,289.0 L401.0,308.0"/>
+      <path d="M303.0,356.0 L303.0,375.0 L322.0,375.0"/>
+      <path d="M382.0,375.0 L401.0,375.0 L401.0,356.0"/>
     </g>
+    <path d="M325.00 314.11H334.34L340.87 341.57L347.34 314.11H356.73L363.21 341.57L369.74 314.11H379.00L370.09 351.89H358.86L352.00 323.17L345.22 351.89H333.98Z" fill="#FFFFFF"/>
   </g>
 </svg>

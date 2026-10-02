@@ -2,168 +2,174 @@
 """
 make_logo_fgwatermark.py
 
-Generates assets/logo.png (and logo.svg source reference) for
-plg_content_fgwatermark, following the FG logo convention:
-  - 512x512, squircle corner radius rx=95 (~18.5% - matches the JED banner
+Generates assets/logo.svg and assets/logo.png for plg_content_fgwatermark,
+following the FG logo convention:
+  - 512x512, squircle corner radius rx=95 (~18.5%, matches the JED banner
     template's .logo-inner frame rounding)
-  - navy gradient background #081D32 -> #113758
-  - coral #FF6B4A accent
-  - flat, no drop shadow on the standalone logo (shadow belongs only in the
-    banner, on its own navy bg - a shadow baked into logo.png leaves a grey
-    halo on non-matching backgrounds)
-  - rendered at 4x supersampling then downsampled (LANCZOS) for clean
-    anti-aliased edges without ever applying a blur filter to the alpha
-    channel itself
+  - navy gradient background #081D32 -> #113758, coral #FF6B4A accent
+  - flat shapes only: no drop shadow, no glow, no blur (a baked-in shadow
+    leaves a grey halo on non-matching backgrounds; soft effects also turn
+    to mush at favicon sizes)
 
-Mark concept: a photo card (small mountain+sun scene, same "generic image"
-motif as the plugin's previous icon) with a small circular coral "stamp"
-badge overlapping its bottom-right corner - a white ring border and a bold
-white "W" inside, slightly rotated for an authentic "rubber stamp applied
-at an angle" look. A compact stamp badge reads clearly as "marked/stamped"
-even at small sizes (unlike a huge rotated letter spanning the whole card,
-which turns illegible/zigzag-looking at this scale), and avoids the old
-diagonal-stripe mark's resemblance to a "blocked/prohibited" sign.
+Mark concept: a photo frame with a coral water droplet overlapping its
+bottom-right corner, and a "W" framed by viewfinder corner brackets inside
+the droplet - "water" + "mark" (and the brackets read as "marked region").
+
+The "W" is drawn as a vector path extracted from DejaVu Sans Bold with
+fontTools, so logo.svg is fully portable (no font dependency when viewed
+on GitHub or elsewhere).
+
+Usage: python3 make_logo_fgwatermark.py   (needs rsvg-convert on PATH)
+Output: logo.svg and logo.png (512x512) in the current directory.
 """
 
-from PIL import Image, ImageDraw, ImageFont
+import math
+import subprocess
 
-SCALE = 4
-SIZE = 512 * SCALE
-
-NAVY_TOP = (8, 29, 50)       # #081D32
-NAVY_BOTTOM = (17, 55, 88)   # #113758
-CORAL = (255, 107, 74)       # #FF6B4A
-CARD_BG = (244, 247, 250)    # #F4F7FA
-MOUNTAIN_DARK = (14, 44, 72)
-MOUNTAIN_LIGHT = (22, 69, 105)
-SUN = (255, 201, 74)
-WHITE = (255, 255, 255)
+from fontTools.pens.boundsPen import BoundsPen
+from fontTools.pens.svgPathPen import SVGPathPen
+from fontTools.pens.transformPen import TransformPen
+from fontTools.ttLib import TTFont
 
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
-CORNER_RADIUS = int(95 * SCALE)
+NAVY_TOP = "#081D32"
+NAVY_BOTTOM = "#113758"
+CORAL = "#FF6B4A"
+CORAL_LIGHT = "#FF9A82"
+CARD = "#F4F7FA"
+SKY = "#C4DCF0"
+SUN = "#FFC94A"
+MOUNTAIN_FAR = "#2B6A9E"
+MOUNTAIN_MID = "#164569"
+MOUNTAIN_DARK = "#0E2C48"
 
 
-def make_gradient_bg(size):
-    base = Image.new("RGB", (size, size), NAVY_TOP)
-    px = base.load()
-    for y in range(size):
-        t = y / (size - 1)
-        for x in range(size):
-            tx = (x / (size - 1)) * 0.25 + t * 0.75
-            r = int(NAVY_TOP[0] + (NAVY_BOTTOM[0] - NAVY_TOP[0]) * tx)
-            g = int(NAVY_TOP[1] + (NAVY_BOTTOM[1] - NAVY_TOP[1]) * tx)
-            b = int(NAVY_TOP[2] + (NAVY_BOTTOM[2] - NAVY_TOP[2]) * tx)
-            px[x, y] = (r, g, b)
-    return base
+def glyph_path(char, cx, cy, target_width):
+    """Vector outline of `char` (DejaVu Sans Bold), centered on (cx, cy)."""
+    font = TTFont(FONT_BOLD)
+    glyphs = font.getGlyphSet()
+    name = font.getBestCmap()[ord(char)]
+
+    bounds = BoundsPen(glyphs)
+    glyphs[name].draw(bounds)
+    xmin, ymin, xmax, ymax = bounds.bounds
+
+    s = target_width / (xmax - xmin)
+    tx = cx - s * (xmin + xmax) / 2
+    ty = cy + s * (ymin + ymax) / 2
+
+    pen = SVGPathPen(glyphs, ntos=lambda v: f"{v:.2f}")
+    glyphs[name].draw(TransformPen(pen, (s, 0, 0, -s, tx, ty)))
+    return pen.getCommands()
 
 
-def build_logo():
-    bg = make_gradient_bg(SIZE)
+def droplet_path(tip, center, radius):
+    """Teardrop: sharp tip, slightly concave flanks, round bulb. The flanks
+    leave the bulb along its tangent lines (smooth join) and are pulled
+    slightly inward near the tip."""
+    px, py = tip
+    cx, cy = center
+    d = cy - py
+    theta = math.asin(radius / d)
+    tangent_len = math.sqrt(d * d - radius * radius)
 
-    # squircle mask
-    mask = Image.new("L", (SIZE, SIZE), 0)
-    mdraw = ImageDraw.Draw(mask)
-    mdraw.rounded_rectangle([0, 0, SIZE - 1, SIZE - 1], radius=CORNER_RADIUS, fill=255)
+    def side(sign):
+        dx, dy = sign * math.sin(theta), math.cos(theta)
+        tx, ty = px + tangent_len * dx, py + tangent_len * dy
+        # control 1: on the line near the tip, nudged toward the axis (concave)
+        c1 = (px + 0.32 * tangent_len * dx - sign * 9, py + 0.32 * tangent_len * dy)
+        # control 2: on the tangent line just before T (keeps the join smooth)
+        c2 = (tx - 0.38 * tangent_len * dx, ty - 0.38 * tangent_len * dy)
+        return (tx, ty), c1, c2
 
-    canvas = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    canvas.paste(bg, (0, 0), mask)
+    (tr, c1r, c2r) = side(+1)
+    (tl, c1l, c2l) = side(-1)
 
-    draw = ImageDraw.Draw(canvas)
-
-    # --- Photo card (centered, nudged slightly up-left to leave room for
-    # the stamp badge overlapping its bottom-right corner) ---
-    card_w, card_h = int(236 * SCALE), int(172 * SCALE)
-    card_x = (SIZE - card_w) // 2 - int(14 * SCALE)
-    card_y = (SIZE - card_h) // 2 - int(14 * SCALE)
-    card_radius = int(16 * SCALE)
-
-    draw.rounded_rectangle(
-        [card_x, card_y, card_x + card_w, card_y + card_h],
-        radius=card_radius, fill=CARD_BG
+    return (
+        f"M{px:.2f},{py:.2f} "
+        f"C{c1r[0]:.2f},{c1r[1]:.2f} {c2r[0]:.2f},{c2r[1]:.2f} {tr[0]:.2f},{tr[1]:.2f} "
+        f"A{radius},{radius} 0 1 1 {tl[0]:.2f},{tl[1]:.2f} "
+        f"C{c2l[0]:.2f},{c2l[1]:.2f} {c1l[0]:.2f},{c1l[1]:.2f} {px:.2f},{py:.2f} Z"
     )
 
-    # mountain + sun scene, clipped to the card
-    scene = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    sdraw = ImageDraw.Draw(scene)
-    sun_r = int(19 * SCALE)
-    sdraw.ellipse(
-        [card_x + card_w - int(68 * SCALE), card_y + int(28 * SCALE) - sun_r,
-         card_x + card_w - int(68 * SCALE) + sun_r * 2, card_y + int(28 * SCALE) + sun_r],
-        fill=SUN
-    )
-    sdraw.polygon(
-        [
-            (card_x, card_y + card_h),
-            (card_x + int(86 * SCALE), card_y + int(74 * SCALE)),
-            (card_x + int(132 * SCALE), card_y + int(116 * SCALE)),
-            (card_x + int(188 * SCALE), card_y + int(46 * SCALE)),
-            (card_x + card_w, card_y + card_h),
-        ],
-        fill=MOUNTAIN_DARK
-    )
-    sdraw.polygon(
-        [
-            (card_x, card_y + card_h),
-            (card_x + int(58 * SCALE), card_y + int(96 * SCALE)),
-            (card_x + int(96 * SCALE), card_y + int(132 * SCALE)),
-            (card_x + card_w, card_y + card_h),
-        ],
-        fill=MOUNTAIN_LIGHT
+
+def bracket_paths(cx, cy, half_w, half_h, arm):
+    """Four L-shaped viewfinder corners around (cx, cy)."""
+    x0, x1 = cx - half_w, cx + half_w
+    y0, y1 = cy - half_h, cy + half_h
+    return [
+        f"M{x0:.1f},{y0 + arm:.1f} L{x0:.1f},{y0:.1f} L{x0 + arm:.1f},{y0:.1f}",
+        f"M{x1 - arm:.1f},{y0:.1f} L{x1:.1f},{y0:.1f} L{x1:.1f},{y0 + arm:.1f}",
+        f"M{x0:.1f},{y1 - arm:.1f} L{x0:.1f},{y1:.1f} L{x0 + arm:.1f},{y1:.1f}",
+        f"M{x1 - arm:.1f},{y1:.1f} L{x1:.1f},{y1:.1f} L{x1:.1f},{y1 - arm:.1f}",
+    ]
+
+
+def build_svg():
+    # droplet geometry (bulb bottom-right, overlapping the frame corner)
+    bulb_c = (352, 330)
+    bulb_r = 86
+    tip = (352, 196)
+    drop_d = droplet_path(tip, bulb_c, bulb_r)
+
+    w_d = glyph_path("W", bulb_c[0], bulb_c[1] + 3, 54)
+    brackets = bracket_paths(bulb_c[0], bulb_c[1] + 2, 49, 43, 19)
+    bracket_svg = "\n      ".join(
+        f'<path d="{b}"/>' for b in brackets
     )
 
-    card_mask = Image.new("L", (SIZE, SIZE), 0)
-    cmdraw = ImageDraw.Draw(card_mask)
-    cmdraw.rounded_rectangle(
-        [card_x, card_y, card_x + card_w, card_y + card_h],
-        radius=card_radius, fill=255
-    )
-    canvas.paste(Image.alpha_composite(canvas.crop((0, 0, SIZE, SIZE)), scene), (0, 0), card_mask)
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="{NAVY_TOP}"/>
+      <stop offset="100%" stop-color="{NAVY_BOTTOM}"/>
+    </linearGradient>
+    <clipPath id="squircle">
+      <rect x="0" y="0" width="512" height="512" rx="95" ry="95"/>
+    </clipPath>
+    <clipPath id="scene">
+      <rect x="104" y="120" width="256" height="224" rx="20" ry="20"/>
+    </clipPath>
+  </defs>
 
-    draw = ImageDraw.Draw(canvas)
-    draw.rounded_rectangle(
-        [card_x, card_y, card_x + card_w, card_y + card_h],
-        radius=card_radius, outline=(11, 35, 56), width=int(4 * SCALE)
-    )
+  <g clip-path="url(#squircle)">
+    <rect x="0" y="0" width="512" height="512" fill="url(#bg)"/>
 
-    # --- Stamp badge: small coral circle overlapping the card's
-    # bottom-right corner, white ring, bold white "W", slightly rotated ---
-    stamp_r = int(82 * SCALE)
-    stamp_cx = card_x + card_w - int(18 * SCALE)
-    stamp_cy = card_y + card_h - int(10 * SCALE)
+    <!-- photo frame, slightly tilted -->
+    <g transform="rotate(-5 232 232)">
+      <rect x="82" y="98" width="300" height="268" rx="36" ry="36" fill="{CARD}"/>
+      <g clip-path="url(#scene)">
+        <rect x="104" y="120" width="256" height="224" fill="{SKY}"/>
+        <circle cx="306" cy="172" r="26" fill="{SUN}"/>
+        <polygon points="96,292 168,206 214,236 150,318" fill="{MOUNTAIN_FAR}"/>
+        <polygon points="104,310 226,176 372,268 372,330 104,330" fill="{MOUNTAIN_MID}"/>
+        <rect x="104" y="288" width="256" height="60" fill="{MOUNTAIN_DARK}"/>
+      </g>
+    </g>
 
-    stamp_layer = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    stdraw = ImageDraw.Draw(stamp_layer)
-    stdraw.ellipse(
-        [stamp_cx - stamp_r, stamp_cy - stamp_r, stamp_cx + stamp_r, stamp_cy + stamp_r],
-        fill=CORAL
-    )
-    ring_w = int(6 * SCALE)
-    stdraw.ellipse(
-        [stamp_cx - stamp_r, stamp_cy - stamp_r, stamp_cx + stamp_r, stamp_cy + stamp_r],
-        outline=WHITE, width=ring_w
-    )
+    <!-- water droplet -->
+    <path d="{drop_d}" fill="{CORAL}" stroke="{CARD}" stroke-width="6" stroke-linejoin="round"/>
+    <ellipse cx="{bulb_c[0] + 46}" cy="{bulb_c[1] - 52}" rx="8" ry="22"
+             transform="rotate(-30 {bulb_c[0] + 46} {bulb_c[1] - 52})" fill="{CORAL_LIGHT}"/>
 
-    w_font = ImageFont.truetype(FONT_BOLD, int(74 * SCALE))
-    bbox = stdraw.textbbox((0, 0), "W", font=w_font)
-    w_w, w_h = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    stdraw.text(
-        (stamp_cx - w_w / 2 - bbox[0], stamp_cy - w_h / 2 - bbox[1]),
-        "W", font=w_font, fill=WHITE
-    )
-
-    stamp_layer = stamp_layer.rotate(-12, resample=Image.BICUBIC, center=(stamp_cx, stamp_cy))
-    canvas = Image.alpha_composite(canvas, stamp_layer)
-
-    # re-apply squircle mask to keep the outer silhouette crisp
-    final = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    final.paste(canvas, (0, 0), mask)
-
-    final = final.resize((512, 512), Image.LANCZOS)
-    return final
+    <!-- viewfinder brackets + W -->
+    <g fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+      {bracket_svg}
+    </g>
+    <path d="{w_d}" fill="#FFFFFF"/>
+  </g>
+</svg>
+"""
 
 
 if __name__ == "__main__":
-    logo = build_logo()
-    logo.save("logo.png")
-    print("Saved logo.png", logo.size)
+    svg = build_svg()
+    with open("logo.svg", "w", encoding="utf-8") as fh:
+        fh.write(svg)
+
+    subprocess.run(
+        ["rsvg-convert", "-w", "512", "-h", "512", "logo.svg", "-o", "logo.png"],
+        check=True,
+    )
+    print("Saved logo.svg and logo.png (512x512)")
