@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FG Watermark – live demo | Joomla content plugin</title>
+<meta name="description" content="Before/after demo of FG Watermark, a Joomla 4/5/6 content plugin that automatically adds an image logo and/or text watermark to images in article content.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#081D32">
+<link rel="canonical" href="https://fgcodework.github.io/plg_content_fgwatermark/">
+<link rel="icon" type="image/png" href="images/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FG Watermark – live demo">
+<meta property="og:description" content="Drag the slider to compare the original photo with the watermarked copy produced by the plugin.">
+<meta property="og:image" content="https://fgcodework.github.io/plg_content_fgwatermark/images/both.jpg">
+<meta property="og:url" content="https://fgcodework.github.io/plg_content_fgwatermark/">
+<style>
+  :root {
+    --navy-900: #081D32;
+    --navy-700: #113758;
+    --coral: #FF6B4A;
+    --text: #E8EEF4;
+    --muted: #A8BCD1;
+    --card: rgba(255, 255, 255, .045);
+    --line: rgba(255, 255, 255, .12);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; background: #0c2742; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: linear-gradient(160deg, var(--navy-900) 0%, #0c2742 55%, var(--navy-700) 100%) no-repeat;
+  }
+
+  a { color: var(--coral); }
+  a:hover { color: #ff8a70; }
+
+  .wrap {
+    width: min(1100px, 100% - 2rem);
+    margin-inline: auto;
+  }
+
+  header.top { padding: 2.2rem 0 1.2rem; }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .brand img {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    flex: none;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.6rem, 4.2vw, 2.4rem);
+    line-height: 1.15;
+    letter-spacing: -.01em;
+  }
+
+  h1 .fg { color: var(--coral); }
+
+  .tag {
+    margin: .2rem 0 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .lead {
+    max-width: 62ch;
+    margin: 1.2rem 0 0;
+    color: var(--text);
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .6rem;
+    margin: 1.6rem 0 1rem;
+  }
+
+  .controls .label {
+    margin-right: .4rem;
+    color: var(--muted);
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .controls button {
+    font: inherit;
+    font-size: .95rem;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .45rem 1.05rem;
+    cursor: pointer;
+  }
+
+  .controls button:hover { border-color: rgba(255, 255, 255, .3); }
+
+  .controls button[aria-pressed="true"] {
+    color: #1a0a05;
+    background: var(--coral);
+    border-color: var(--coral);
+    font-weight: 600;
+  }
+
+  .controls button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+
+  /* ---------- before / after slider ---------- */
+  .compare {
+    --pos: 50%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: #000;
+    aspect-ratio: 1400 / 658;
+    user-select: none;
+    -webkit-user-select: none;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+  }
+
+  .compare img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    -webkit-user-drag: none;
+  }
+
+  .compare .after { clip-path: inset(0 0 0 var(--pos)); }
+
+  .compare .chip {
+    position: absolute;
+    top: .8rem;
+    padding: .2rem .7rem;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(8, 29, 50, .78);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .compare .chip.l { left: .8rem; }
+  .compare .chip.r { right: .8rem; background: rgba(255, 107, 74, .92); color: #1a0a05; }
+
+  .compare .handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos);
+    width: 3px;
+    margin-left: -1.5px;
+    background: #fff;
+    box-shadow: 0 0 0 1px rgba(8, 29, 50, .35);
+    pointer-events: none;
+  }
+
+  .compare .knob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 46px;
+    height: 46px;
+    margin: -23px 0 0 -23px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--navy-900);
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .4);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .compare input[type="range"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+    touch-action: pan-y;
+  }
+
+  .compare:focus-within .knob { outline: 3px solid var(--coral); outline-offset: 3px; }
+
+  .hint {
+    margin: .6rem 0 0;
+    color: var(--muted);
+    font-size: .9rem;
+    text-align: center;
+  }
+
+  /* ---------- details ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+
+  .card {
+    padding: 1.2rem 1.4rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  .card h2 {
+    margin: 0 0 .8rem;
+    font-size: 1.05rem;
+    letter-spacing: .01em;
+  }
+
+  .card ul { margin: 0; padding-left: 1.1rem; }
+  .card li { margin: .45rem 0; }
+  .card li::marker { color: var(--coral); }
+
+  dl.settings {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .35rem 1.2rem;
+    margin: 0;
+  }
+
+  dl.settings dt { color: var(--muted); }
+  dl.settings dd { margin: 0; font-weight: 600; word-break: break-word; }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem 1.4rem;
+    margin: 0 0 2.4rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  footer {
+    padding: 1.4rem 0 2.6rem;
+    color: var(--muted);
+    font-size: .88rem;
+    border-top: 1px solid var(--line);
+  }
+
+  footer p { margin: .3rem 0; }
+
+  /* no-JS fallback */
+  noscript .static { display: grid; gap: 1rem; margin-top: 1rem; }
+  noscript .static figure { margin: 0; }
+  noscript .static img { width: 100%; height: auto; border-radius: 10px; display: block; }
+  noscript .static figcaption { color: var(--muted); font-size: .9rem; margin-top: .3rem; }
+
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+    .compare .chip { top: .5rem; font-size: .7rem; padding: .15rem .55rem; }
+    .compare .chip.l { left: .5rem; }
+    .compare .chip.r { right: .5rem; }
+    .compare .knob { width: 38px; height: 38px; margin: -19px 0 0 -19px; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .controls button { transition: background-color .15s, border-color .15s; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <img src="images/logo.png" width="64" height="64" alt="FG Watermark logo">
+      <div>
+        <h1><span class="fg">FG</span> Watermark – live demo</h1>
+        <p class="tag">Automatic image &amp; text watermarking for Joomla articles</p>
+      </div>
+    </div>
+    <p class="lead">
+      See what the plugin does to images in article content. Drag the slider to compare
+      the original photo with the watermarked copy that Joomla serves instead of it.
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="controls" role="group" aria-label="Watermark type">
+    <span class="label" id="variant-label">Watermark type</span>
+    <button type="button" data-variant="logo" aria-pressed="true">Image logo</button>
+    <button type="button" data-variant="text" aria-pressed="false">Text</button>
+    <button type="button" data-variant="both" aria-pressed="false">Logo + text</button>
+  </div>
+
+  <div class="compare" id="compare">
+    <img class="before" src="images/original.jpg" width="1400" height="658" alt="Sample photo of a recycling plant, original without any watermark">
+    <img class="after" id="afterImg" src="images/logo.jpg" width="1400" height="658" alt="The same photo with the image logo watermark applied in the bottom-right corner">
+    <span class="chip l">Before</span>
+    <span class="chip r">After</span>
+    <div class="handle" aria-hidden="true"><div class="knob">&#8596;</div></div>
+    <input type="range" id="slider" min="0" max="100" step="1" value="50"
+           aria-label="Comparison slider: drag to reveal the original (left) or the watermarked image (right)">
+  </div>
+  <p class="hint">Drag the slider, or use the arrow keys when it is focused.</p>
+
+  <noscript>
+    <div class="static">
+      <figure><img src="images/original.jpg" alt="Original photo, no watermark"><figcaption>Original</figcaption></figure>
+      <figure><img src="images/logo.jpg" alt="Photo with image logo watermark"><figcaption>Image logo watermark</figcaption></figure>
+      <figure><img src="images/text.jpg" alt="Photo with text watermark"><figcaption>Text watermark</figcaption></figure>
+      <figure><img src="images/both.jpg" alt="Photo with logo and text watermarks"><figcaption>Logo + text watermarks</figcaption></figure>
+    </div>
+  </noscript>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="h-settings">
+      <h2 id="h-settings">Settings used for this sample</h2>
+      <dl class="settings" id="settings"></dl>
+    </section>
+
+    <section class="card" aria-labelledby="h-how">
+      <h2 id="h-how">What you are looking at</h2>
+      <ul>
+        <li>The sample images were produced by the plugin's own engine, the same code that runs on a Joomla site &ndash; not a mock-up.</li>
+        <li>Originals are never modified. The watermark is applied to a cached copy, and the article's image address is swapped for it when the page is rendered.</li>
+        <li>Links that point straight at an image (the "full size" link of a lightbox) get the watermarked copy too.</li>
+        <li>Image logo (PNG, JPG, GIF or SVG), text, or both; nine positions; opacity and margin for each layer.</li>
+      </ul>
+    </section>
+  </div>
+
+  <ul class="links">
+    <li><a href="https://github.com/FGcodework/plg_content_fgwatermark#readme">Documentation</a></li>
+    <li><a href="https://github.com/FGcodework/plg_content_fgwatermark/releases/latest">Download</a></li>
+    <li><a href="https://github.com/FGcodework/plg_content_fgwatermark/issues">Support / issues</a></li>
+    <li><a href="https://github.com/FGcodework/plg_content_fgwatermark">Source code</a></li>
+    <li><a href="https://fgcodework.github.io/">More FG Joomla extensions</a></li>
+  </ul>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>FG Watermark is free, open-source software (GPL-2.0-or-later) for Joomla 4.4+, 5 and 6.</p>
+    <p>The sample photo is resized to 1400&nbsp;px wide for this page.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var VARIANTS = {
+    logo: {
+      img: 'images/logo.jpg',
+      alt: 'The same photo with the image logo watermark applied in the bottom-right corner',
+      settings: [
+        ['Image watermark', 'On'],
+        ['Logo file', 'PNG with transparency'],
+        ['Position', 'Bottom right'],
+        ['Size', '14 % of image width'],
+        ['Opacity', '90 %'],
+        ['Margin', '28 px'],
+        ['Text watermark', 'Off']
+      ]
+    },
+    text: {
+      img: 'images/text.jpg',
+      alt: 'The same photo with a dark text watermark centred along the bottom edge',
+      settings: [
+        ['Text watermark', 'On'],
+        ['Text', '\u00A9 FG Watermark demo'],
+        ['Font', 'TTF file (full diacritics support)'],
+        ['Size', '36 px'],
+        ['Colour', '#0B2338'],
+        ['Position', 'Bottom centre'],
+        ['Opacity', '85 %'],
+        ['Margin', '28 px'],
+        ['Image watermark', 'Off']
+      ]
+    },
+    both: {
+      img: 'images/both.jpg',
+      alt: 'The same photo with the logo in the bottom-right corner and a text watermark along the bottom edge',
+      settings: [
+        ['Image watermark', 'On \u2013 bottom right, 14 %, opacity 90 %'],
+        ['Text watermark', 'On \u2013 bottom centre, 36 px, opacity 85 %'],
+        ['Text', '\u00A9 FG Watermark demo'],
+        ['Text colour', '#0B2338'],
+        ['Margin (both)', '28 px']
+      ]
+    }
+  };
+
+  var compare = document.getElementById('compare');
+  var slider = document.getElementById('slider');
+  var afterImg = document.getElementById('afterImg');
+  var settingsEl = document.getElementById('settings');
+  var buttons = document.querySelectorAll('.controls button[data-variant]');
+
+  function setPos(value) {
+    compare.style.setProperty('--pos', value + '%');
+    slider.setAttribute('aria-valuetext', value + '% of the way across: left of this is the original, right is watermarked');
+  }
+
+  function renderSettings(rows) {
+    while (settingsEl.firstChild) { settingsEl.removeChild(settingsEl.firstChild); }
+    rows.forEach(function (row) {
+      var dt = document.createElement('dt');
+      var dd = document.createElement('dd');
+      dt.textContent = row[0];
+      dd.textContent = row[1];
+      settingsEl.appendChild(dt);
+      settingsEl.appendChild(dd);
+    });
+  }
+
+  function selectVariant(key) {
+    var v = VARIANTS[key];
+    if (!v) { return; }
+    afterImg.src = v.img;
+    afterImg.alt = v.alt;
+    renderSettings(v.settings);
+    Array.prototype.forEach.call(buttons, function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-variant') === key ? 'true' : 'false');
+    });
+  }
+
+  slider.addEventListener('input', function () { setPos(slider.value); });
+
+  Array.prototype.forEach.call(buttons, function (b) {
+    b.addEventListener('click', function () { selectVariant(b.getAttribute('data-variant')); });
+  });
+
+  // Warm the browser cache so switching variants is instant.
+  Object.keys(VARIANTS).forEach(function (key) {
+    var preload = new Image();
+    preload.src = VARIANTS[key].img;
+  });
+
+  setPos(slider.value);
+  selectVariant('logo');
+}());
+</script>
+</body>
+</html>
