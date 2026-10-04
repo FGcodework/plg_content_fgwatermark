@@ -75,3 +75,5 @@ GPL-2.0-or-later. See [LICENSE](LICENSE).
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md).
+
+**[▶ Live demo – before/after](https://fgcodework.github.io/plg_content_fgwatermark/)**
