@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="plg_content_fgwatermark logo" width="128" height="128">
+  <img src="assets/logo.webp" alt="plg_content_fgwatermark logo" width="128" height="128">
 </p>
 
 <h1 align="center">FG Watermark plugin for Joomla</h1>
